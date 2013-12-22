@@ -1,0 +1,85 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace _1061
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            int n = Convert.ToInt32(Console.ReadLine());
+            bool [,] wall= new bool[n + 2, n + 2];
+            bool [,] mark = new bool[n + 2, n + 2];
+            for (int i = 0; i < n + 2; ++i)
+                for (int j = 0; j < n + 2; ++j){
+                    wall[i,j] = true;
+                    mark[i,j] = false;
+                }
+            char c;
+            // 1 - стена, 0 - пустое пространство
+            for (int i = 1; i <= n; ++i)
+                for (int j = 1; j <= n; ++j){
+                    c = (char) Console.Read();
+                    if (c == '\n' || c == '\r')
+                    {
+                        --j;
+                        continue;
+                    }
+                    if (c == '.')
+                        wall[i,j] = false;
+                }
+            int count = 0;
+            // Очередь. Здесь будут хранится ячейки, для которых нужно проверить есть ли вокруг стена
+            Queue<KeyValuePair<int, int> > q = new Queue<KeyValuePair<int,int>>();
+            // Мы находимся в начале комнаты
+            q.Enqueue(new KeyValuePair<int, int>(1, 1));   // Помещяем его в очередь обработки
+            mark[1,1] = true;          // Отмечаем, что были уже в начале комнаты, что первая ячейка была уже в очреди.
+            while(q.Count > 0){      // Пока очередь не пустая
+                // Извлекаем клетку для проврки на наличие вокруг стены.
+                KeyValuePair<int, int> pair = q.Dequeue();
+                int i = pair.Key, 
+                    j = pair.Value;
+                // Тут проверяем верхний. нижний, левый, правый.
+                for (int di= -1; di <= 1; di++)
+                    for (int dj = (di == 0) ? -1 : 0; dj <= 1; dj += 2){
+                        if (wall[i + di,j + dj]) // Если это стена
+                            ++count;              // считаем его
+                        else
+                            if (!mark[i + di,j + dj]){ // Иначе, если мы там еще не были, ты заталкиваем в очередь и помечаем
+                                q.Enqueue(new KeyValuePair<int, int>(i + di, j + dj));
+                                mark[i + di,j + dj] = true;
+                            }
+                }
+            }
+            /*Эта часть кода для такого случаея
+             *      .###        .####
+             *      ####        ..##.
+             *      ###.        .###.
+             * Это допустимые входные данные. Комната не связная. Поэтому этот же код выше нужно выполнить и для
+             * второй части комноты, для выхода
+             */
+            if (!mark[n,n]){       // Если выход не помечен, значит у нас именно такая ситуация.
+                q.Enqueue(new KeyValuePair<int, int>(n, n));       // Помещаем в очередь конец комнаты и т. д.
+                mark[n,n] = true;
+                while(q.Count > 0){
+                    KeyValuePair<int, int> pair = q.Dequeue();
+                    int i = pair.Key, j = pair.Value;
+                    for (int di= -1; di <= 1; di++)
+                        for (int dj = (di == 0) ? -1 : 0; dj <= 1; dj += 2){
+                            if (wall[i + di,j + dj])
+                                ++count;
+                            else
+                                if (!mark[i + di,j + dj]){
+                                    q.Enqueue(new KeyValuePair<int, int>(i + di, j + dj));
+                                    mark[i + di,j + dj] = true;
+                                }
+                        }
+                }
+            }
+            count = (count - 4) * 9;
+            Console.WriteLine(count);
+        }
+    }
+}

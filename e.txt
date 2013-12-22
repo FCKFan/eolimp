@@ -1,0 +1,48 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace _978
+{
+    class Program
+    {
+        static private List<List<int> > e;
+        static private List<bool> mark;
+        static private List<KeyValuePair<int, int> > edges;
+
+
+        static private void dfs(int u){
+            mark[u] = true;
+            for (int i = 0; i < e[u].Count; ++i)
+                if (!mark[e[u][i]]){
+                    edges.Add(new KeyValuePair<int,int>(u, e[u][i]));
+                        dfs(e[u][i]);
+                    }          
+        }
+        static void Main(string[] args)
+        {
+            string []h = Console.ReadLine().Split();
+            int n = Convert.ToInt32(h[0]),
+                m = Convert.ToInt32(h[1]);
+            e = new List<List<int>>();
+            for (int i = 0; i < n + 1; ++i)
+                e.Add(new List<int>());
+            int u, v;
+            for (int i = 0; i < m; ++i){
+                h = Console.ReadLine().Split();
+                u = Convert.ToInt32(h[0]);
+                v = Convert.ToInt32(h[1]);
+                e[u].Add(v);
+                e[v].Add(u);
+            }
+            mark = new List<bool>();
+            for (int i = 0; i < n + 1; ++i)
+                mark.Add(false);
+            edges = new List<KeyValuePair<int, int>>();
+            dfs(1);
+            for (int i = 0; i < edges.Count; ++i)
+                Console.WriteLine(edges[i].Key + " " + edges[i].Value);
+        }
+    }
+}

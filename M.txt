@@ -1,0 +1,60 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace _2590
+{
+   class Program
+   {
+       static void Main(string[] args)
+       {
+           int n = Convert.ToInt32(Console.ReadLine());
+           bool [,] marked = new bool[n + 2, n + 2];
+           bool [,] asteroid = new bool[n + 2, n + 2];
+           int count = 0;
+           for (int i = 0; i < n + 2; ++i)
+               for (int j = 0; j < n + 2; ++j){
+                   marked[i,j] = false;
+                   asteroid[i,j] = false;
+               }
+
+           char c;
+           for (int i = 1; i <= n; ++i)
+               for (int j = 1; j <= n; ++j){
+                   c = (char)Console.Read();
+                   if (c == '\r' || c == '\n')
+                   {
+                       j--;
+                       continue;
+                   }
+                   if (c == '*')
+                       asteroid[i,j] = true;
+           }
+
+           int ai, aj;
+           Queue<int> q = new Queue<int>();
+           for (int i = 1; i <= n; ++i)
+               for (int j = 1; j <= n; ++j)
+                   if (!marked[i,j] && asteroid[i,j]){
+                       q.Enqueue(i);
+                       q.Enqueue(j);
+                       marked[i,j] = true;
+                       while (q.Count > 0){
+                           ai = q.Dequeue();
+                           aj = q.Dequeue();
+
+                           for (int di = -1; di <= 1; ++di)
+                               for (int dj = (di == 0) ? -1 : 0; dj <= 1; dj += 2)
+                                   if (!marked[ai + di, aj + dj] && asteroid[ai + di, aj + dj]){
+                                       marked[ai + di, aj + dj] = true;
+                                       q.Enqueue(ai + di);
+                                       q.Enqueue(aj + dj);
+                                   }
+                       }
+                       count += 1;
+                   }
+           Console.WriteLine(count);
+       }
+   }
+}

@@ -1,0 +1,38 @@
+#include <iostream>
+#include <vector>
+#include <cmath>
+using namespace std;
+
+const int inf = 99999999;
+
+int main(int argc, char** argv) {
+   int n;
+   cin >> n; 
+   vector<vector<vector<int> > > d(n + 1, vector<vector<int> >(n + 1, 
+           vector<int>(2)));
+
+   for (int i = 1; i <= n; ++i)
+       for (int j = 1; j <= n; ++j){
+           cin >> d[i][j][0];
+           if (d[i][j][0] == -1)
+               d[i][j][0] = inf;
+       }
+
+   for (int k = 1; k <= n; ++k){
+       for (int i = 1; i <= n; ++i){
+           for (int j = 1; j <= n; ++j){
+               d[i][j][k % 2] = std::min<int>(d[i][j][(k - 1) % 2],
+                   d[i][k][(k - 1) % 2] + d[k][j][(k - 1) % 2]);
+           }
+       }
+   }
+
+   int max = -inf;
+   for (int i = 1; i <= n; ++i)
+       for (int j = 1; j <= n; ++j)
+           if (d[i][j][n % 2] > max && d[i][j][n % 2] < inf)
+               max = d[i][j][n % 2];
+   cout << max << endl;    
+
+   return 0;
+}
